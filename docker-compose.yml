@@ -1,0 +1,18 @@
+version: "3.1"
+
+services:
+  app:
+    build:
+      context: ./docker
+      args:
+        UID: ${DEV_UID:-1000}
+    container_name: saml-client-dev
+    volumes:
+      - .:/app
+      - ~/.composer:/home/dev/.composer
+      - ~/.ssh:/home/dev/.ssh
+    environment:
+      - PHP_IDE_CONFIG=serverName=saml-client-dev
+      - COMPOSER_HOME=${COMPOSER_HOME:-~/.composer}
+      - SSH_DIR=${SSH_DIR:-~/.ssh}
+      - XDEBUG_CONFIG
