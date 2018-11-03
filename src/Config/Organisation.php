@@ -1,8 +1,7 @@
 <?php
 
-namespace Krixon\SamlClient\Config;
+namespace Krixon\SamlClient;
 
-use Krixon\SamlClient\Name;
 use Psr\Http\Message\UriInterface;
 
 final class Organisation

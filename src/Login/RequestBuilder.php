@@ -4,7 +4,7 @@ namespace Krixon\SamlClient\Login;
 
 use Krixon\SamlClient\Name;
 use Krixon\SamlClient\Protocol\AuthnContextClass;
-use Krixon\SamlClient\Config\Organisation;
+use Krixon\SamlClient\Organisation;
 use Krixon\SamlClient\Protocol\Binding;
 use Krixon\SamlClient\Protocol\Instant;
 use Krixon\SamlClient\Protocol\NameIdPolicy;
