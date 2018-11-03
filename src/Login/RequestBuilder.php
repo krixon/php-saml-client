@@ -12,7 +12,7 @@ use Krixon\SamlClient\Protocol\RequestedAuthnContext;
 use Krixon\SamlClient\Protocol\RequestId;
 use Psr\Http\Message\UriInterface;
 
-final class RequestBuilder
+class RequestBuilder
 {
     private $id;
     private $uri;
