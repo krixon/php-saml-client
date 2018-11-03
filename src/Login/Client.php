@@ -28,12 +28,12 @@ class Client
      *
      * If a RequestInterface is returned, a server-side HTTP client should ultimately issue that request. In practice,
      * this will be a POST request to the identity provider containing the login request payload. A RequestInterface
-     * will be returned if the HTTP-POST binding is configured for the identity provider.
+     * will be returned if the HTTP-POST binding is configured for the request.
      *
      * If a ResponseInterface is returned, it should be presented to the user agent which initiated login. In practice,
      * this will be a 302 redirect response with a Location header containing the identity provider's URL along
      * with the login request payload parameters. A ResponseInterface will be returned if the HTTP-Redirect binding
-     * is configured for the identity provider.
+     * is configured for the request.
      */
     public function login(Request $request) : MessageInterface
     {
