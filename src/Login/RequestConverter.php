@@ -6,9 +6,9 @@ use Krixon\SamlClient\Compression\Deflator;
 use Krixon\SamlClient\Compression\ZlibInflatorDeflator;
 
 /**
- * Responsible for converting a Request object into a string suitable for use as a query string parameter.
+ * Responsible for converting a Request object into a string suitable for use as the payload in a HTTP request.
  *
- * Note that the result is not URL-encoded; that is the responsibility of whatever builds the final URL.
+ * Note that the result is not URL-encoded; that is the responsibility of whatever builds the final HTTP request.
  */
 class RequestConverter
 {
