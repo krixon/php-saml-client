@@ -2,7 +2,7 @@
 
 namespace Krixon\SamlClient\Compression;
 
-class ZlibInflatorDeflator implements Inflator, Deflator
+class ZlibInflatorDeflator implements InflatorDeflator
 {
     public function deflate(string $data) : string
     {

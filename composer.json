@@ -18,6 +18,7 @@
     "ext-curl": "*",
     "ext-date": "*",
     "ext-dom": "*",
+    "ext-libxml": "*",
     "ext-zlib": "*",
     "psr/http-message": "^1.0"
   },

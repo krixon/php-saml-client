@@ -2,7 +2,8 @@
 
 namespace Krixon\SamlClient\Compression;
 
-interface Inflator
+interface InflatorDeflator
 {
     public function inflate(string $data) : string;
+    public function deflate(string $data) : string;
 }

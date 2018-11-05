@@ -2,6 +2,8 @@
 
 namespace Krixon\SamlClient\Document;
 
+use Krixon\SamlClient\Exception\InvalidXml;
+
 final class SamlDocument extends \DOMDocument
 {
     /** @noinspection PhpHierarchyChecksInspection LSP doesn't apply to constructors! */
@@ -23,7 +25,48 @@ final class SamlDocument extends \DOMDocument
         $namespaces[] = XmlNamespace::samlp();
 
         foreach ($namespaces as $namespace) {
+            // useNamespace() is idempotent, so don't bother de-duping the array.
             $document->useNamespace($namespace);
+        }
+
+        return $document;
+    }
+
+
+    public static function import(string $xml)
+    {
+        // Prevent XXE attacks caused by referencing external entities in the XML.
+        // https://www.owasp.org/index.php/XML_External_Entity_(XXE)_Processing
+        if (stripos($xml, '<!ENTITY') !== false) {
+            throw new InvalidXml('Use of <!ENTITY> in XML is not supported.');
+        }
+
+        // DomDocument::loadXML will trigger a warning on invalid XML rather than throwing.
+        // To work around that, register a temporary error handler.
+        set_error_handler(function ($number, $message) {
+            if ($number === E_WARNING && stripos($message, 'DOMDocument::loadXML')) {
+                throw new InvalidXml($message);
+            }
+            // Invoke the previous error handler.
+            return false;
+        });
+
+        // libxml2 version >=2.6 contains entity substitution limits designed to prevent both exponential and
+        // quadratic attacks. To be safe and to support earlier versions however, explicitly disable entity loading.
+        $entityLoader = libxml_disable_entity_loader(true);
+
+        $document = new self();
+
+        try {
+            $result = $document->loadXML($xml);
+        } finally {
+            libxml_disable_entity_loader($entityLoader);
+            restore_error_handler();
+        }
+
+        if (!$result) {
+            // Errors should already have been caught by the error handler, but just in case...
+            throw new InvalidXml('Unable to load XML from string.');
         }
 
         return $document;

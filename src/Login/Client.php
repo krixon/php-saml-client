@@ -4,6 +4,7 @@ namespace Krixon\SamlClient\Login;
 
 use Krixon\SamlClient\Exception\UnsupportedBinding;
 use Krixon\SamlClient\Http\HttpFactory;
+use Krixon\SamlClient\Http\DocumentCodec;
 use Krixon\SamlClient\Protocol\Binding;
 use Psr\Http\Message\UriInterface;
 use Psr\Http\Message\MessageInterface;
@@ -12,14 +13,14 @@ use Psr\Http\Message\ResponseInterface;
 
 class Client
 {
-    private $requestConverter;
+    private $documentCodec;
     private $httpFactory;
 
 
-    public function __construct(HttpFactory $httpFactory, RequestConverter $requestConverter = null)
+    public function __construct(HttpFactory $httpFactory, DocumentCodec $requestConverter = null)
     {
-        $this->httpFactory      = $httpFactory;
-        $this->requestConverter = $requestConverter ?: new RequestConverter();
+        $this->httpFactory   = $httpFactory;
+        $this->documentCodec = $requestConverter ?: new DocumentCodec();
     }
 
 
@@ -54,11 +55,17 @@ class Client
     }
 
 
+    public function finish(Response $response)
+    {
+
+    }
+
+
     private function parameters(Request $request) : array
     {
         $parameters = $request->parameters();
 
-        $parameters['SAMLRequest'] = $this->requestConverter->convert($request);
+        $parameters['SAMLRequest'] = $this->documentCodec->toPayload($request);
 
         $relayState = $request->relayState();
         if (null !== $relayState) {
