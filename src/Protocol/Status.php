@@ -52,4 +52,22 @@ final class Status
 
         return new self(StatusCode::fromString($code), $message, $detail);
     }
+
+
+    public function code() : StatusCode
+    {
+        return $this->code;
+    }
+
+
+    public function message() : ?string
+    {
+        return $this->message;
+    }
+
+
+    public function detail() : ?string
+    {
+        return $this->detail;
+    }
 }

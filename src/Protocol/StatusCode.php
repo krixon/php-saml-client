@@ -44,6 +44,12 @@ final class StatusCode
     }
 
 
+    public function toString() : string
+    {
+        return $this->code;
+    }
+
+
     public function isSuccess() : bool
     {
         return $this->code === self::SUCCESS;
