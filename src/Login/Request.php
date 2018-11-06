@@ -72,7 +72,7 @@ class Request
     }
 
 
-    public function toDomDocument() : \DOMDocument
+    public function toDocument() : SamlDocument
     {
         return $this->document;
     }

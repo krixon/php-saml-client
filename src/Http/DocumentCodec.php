@@ -5,7 +5,6 @@ namespace Krixon\SamlClient\Http;
 use Krixon\SamlClient\Compression\InflatorDeflator;
 use Krixon\SamlClient\Compression\ZlibInflatorDeflator;
 use Krixon\SamlClient\Document\SamlDocument;
-use Krixon\SamlClient\Login\Request;
 
 /**
  * Responsible for converting a SamlDocument into a string suitable for use in a HTTP request, and vice versa.
@@ -21,9 +20,9 @@ class DocumentCodec
     }
 
 
-    public function toPayload(Request $request) : string
+    public function toPayload(SamlDocument $document) : string
     {
-        $xml = self::stringify($request);
+        $xml = self::stringify($document);
         $xml = $this->inflatorDeflator->deflate($xml);
         $xml = base64_encode($xml);
 
@@ -41,10 +40,8 @@ class DocumentCodec
     }
 
 
-    private static function stringify(Request $request) : string
+    private static function stringify(SamlDocument $document) : string
     {
-        $document = $request->toDomDocument();
-
         $document->formatOutput       = false;
         $document->preserveWhiteSpace = false;
 

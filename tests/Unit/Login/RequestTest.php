@@ -11,7 +11,7 @@ class RequestTest extends LoginTestCase
      */
     public function testProducesExpectedXml(Request $request, string $expected)
     {
-        static::assertXmlStringEqualsXmlString($expected, $request->toDomDocument());
+        static::assertXmlStringEqualsXmlString($expected, $request->toDocument());
     }
 
 

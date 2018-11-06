@@ -29,7 +29,7 @@ class RequestBuilderTest extends TestCase
             $request->id()->toString()
         );
 
-        static::assertXmlStringEqualsXmlString($expected, $request->toDomDocument());
+        static::assertXmlStringEqualsXmlString($expected, $request->toDocument());
     }
 
 
@@ -65,7 +65,7 @@ class RequestBuilderTest extends TestCase
             $request->id()->toString()
         );
 
-        static::assertXmlStringEqualsXmlString($expected, $request->toDomDocument());
+        static::assertXmlStringEqualsXmlString($expected, $request->toDocument());
     }
 
 
@@ -91,7 +91,7 @@ class RequestBuilderTest extends TestCase
             $request->id()->toString()
         );
 
-        static::assertXmlStringEqualsXmlString($expected, $request->toDomDocument());
+        static::assertXmlStringEqualsXmlString($expected, $request->toDocument());
     }
 
 
@@ -120,7 +120,7 @@ class RequestBuilderTest extends TestCase
             $request->id()->toString()
         );
 
-        static::assertXmlStringEqualsXmlString($expected, $request->toDomDocument());
+        static::assertXmlStringEqualsXmlString($expected, $request->toDocument());
     }
 
 

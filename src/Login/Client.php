@@ -65,7 +65,7 @@ class Client
     {
         $parameters = $request->parameters();
 
-        $parameters['SAMLRequest'] = $this->documentCodec->toPayload($request);
+        $parameters['SAMLRequest'] = $this->documentCodec->toPayload($request->toDocument());
 
         $relayState = $request->relayState();
         if (null !== $relayState) {

@@ -55,7 +55,7 @@ class DocumentCodecTest extends TestCase
             ->issueInstant(Instant::fromString($instant))
             ->build();
 
-        $result   = $documentCodec->toPayload($request);
+        $result   = $documentCodec->toPayload($request->toDocument());
         $expected =
             'PHNhbWxwOkF1dGhuUmVxdWVzdCB4bWxuczpzYW1scD0idXJuOm9hc2lzOm5hbWVzOnRjOlNBTUw6Mi4wOnByb3RvY29s' .
             'IiBWZXJzaW9uPSIyLjAiIElEPSJhYmMxMjMiIElzc3VlSW5zdGFudD0iMjAwMC0wMS0wMVQwMDowMDowMFoiLz4%3D';
