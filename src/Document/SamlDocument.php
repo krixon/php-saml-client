@@ -2,8 +2,6 @@
 
 namespace Krixon\SamlClient\Document;
 
-use Krixon\SamlClient\Exception\InvalidXml;
-
 final class SamlDocument extends \DOMDocument
 {
     /** @noinspection PhpHierarchyChecksInspection LSP doesn't apply to constructors! */
@@ -26,7 +24,7 @@ final class SamlDocument extends \DOMDocument
 
         foreach ($namespaces as $namespace) {
             // useNamespace() is idempotent, so don't bother de-duping the array.
-            $document->useNamespace($namespace);
+            $document->registerNamespace($namespace);
         }
 
         return $document;
@@ -38,21 +36,22 @@ final class SamlDocument extends \DOMDocument
         // Prevent XXE attacks caused by referencing external entities in the XML.
         // https://www.owasp.org/index.php/XML_External_Entity_(XXE)_Processing
         if (stripos($xml, '<!ENTITY') !== false) {
-            throw new InvalidXml('Use of <!ENTITY> in XML is not supported.');
+            throw new Exception\InvalidDocument('Use of <!ENTITY> in XML is not supported.');
         }
 
         // DomDocument::loadXML will trigger a warning on invalid XML rather than throwing.
         // To work around that, register a temporary error handler.
         set_error_handler(function ($number, $message) {
             if ($number === E_WARNING && stripos($message, 'DOMDocument::loadXML')) {
-                throw new InvalidXml($message);
+                throw new Exception\InvalidDocument($message);
             }
             // Invoke the previous error handler.
             return false;
         });
 
         // libxml2 version >=2.6 contains entity substitution limits designed to prevent both exponential and
-        // quadratic attacks. To be safe and to support earlier versions however, explicitly disable entity loading.
+        // quadratic attacks. We should also have caught any uses of ENTITY above. To be safe and to support earlier
+        // libxml2 versions however, explicitly disable entity loading.
         $entityLoader = libxml_disable_entity_loader(true);
 
         $document = new self();
@@ -66,7 +65,16 @@ final class SamlDocument extends \DOMDocument
 
         if (!$result) {
             // Errors should already have been caught by the error handler, but just in case...
-            throw new InvalidXml('Unable to load XML from string.');
+            throw new Exception\InvalidDocument('Unable to load XML from string.');
+        }
+
+        if (null === $document->documentElement) {
+            throw new Exception\InvalidDocument('Unable to load XML from string. A root element is required.');
+        }
+
+        $version = $document->documentElement->getAttribute('Version');
+        if ($version !== '2.0') {
+            throw Exception\InvalidDocument::unsupportedSamlVersion($version);
         }
 
         return $document;
@@ -79,8 +87,22 @@ final class SamlDocument extends \DOMDocument
     }
 
 
-    public function useNamespace(XmlNamespace $namespace) : void
+    public function registerNamespace(XmlNamespace $namespace) : void
     {
         $this->root()->setAttributeNS('http://www.w3.org/2000/xmlns/', $namespace->qualifiedName(), $namespace->urn());
+    }
+
+
+    public function query(string $expression, \DOMElement $context = null) : \DOMNodeList
+    {
+        $xpath   = new \DOMXPath($this);
+        $context = $context ?: $this->documentElement;
+
+        // TODO: Might not be needed - see 3rd arg to XPath::query.
+//        foreach (XmlNamespace::all() as $namespace) {
+//            $xpath->registerNamespace($namespace->qualifiedName(), $namespace->urn());
+//        }
+
+        return $xpath->query($expression, $context);
     }
 }

@@ -2,8 +2,10 @@
 
 namespace Krixon\SamlClient\Test;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Krixon\SamlClient\Http\GuzzleHttpFactory;
 use Krixon\SamlClient\Http\HttpFactory;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 
 class TestCase extends \PHPUnit\Framework\TestCase
@@ -28,5 +30,13 @@ class TestCase extends \PHPUnit\Framework\TestCase
     protected function createUri(string $uri = 'http://example.com') : UriInterface
     {
         return $this->httpFactory->createUri($uri);
+    }
+
+
+    protected function createServerRequest(
+        string $method = 'POST',
+        string $uri = 'http://example.com'
+    ) : ServerRequestInterface {
+        return new ServerRequest($method, $uri);
     }
 }

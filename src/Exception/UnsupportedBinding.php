@@ -6,14 +6,26 @@ use Krixon\SamlClient\Protocol\Binding;
 
 class UnsupportedBinding extends \InvalidArgumentException implements SamlClientException
 {
-    public function __construct(Binding $binding, string $context, Binding ...$supported)
+    public function __construct(Binding $binding = null, string $context = null, Binding ...$supported)
     {
-        $message = sprintf(
-            "Unsupported binding for %s: '%s'. Supported bindings: [%s]",
-            $binding->toString(),
-            $context,
-            self::stringifyBindingArray($supported)
-        );
+        $message = 'Unsupported binding';
+
+        if ($context) {
+            $message .= "for $context";
+        }
+
+        if ($binding) {
+            $message .= sprintf(": '%s'", $binding->toString());
+        }
+
+        if ($supported) {
+            $message .= sprintf(
+                ". Supported bindings: [%s]",
+                self::stringifyBindingArray($supported)
+            );
+        }
+
+        $message .= '.';
 
         parent::__construct($message);
     }

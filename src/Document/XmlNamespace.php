@@ -21,6 +21,21 @@ final class XmlNamespace
     }
 
 
+    /**
+     * @return self[]
+     */
+    public static function all() : array
+    {
+        $instances = [];
+
+        foreach (array_keys(self::MAP) as $qualifiedName) {
+            $instances[] = new self($qualifiedName);
+        }
+
+        return $instances;
+    }
+
+
     public static function saml() : self
     {
         return new self(self::SAML);

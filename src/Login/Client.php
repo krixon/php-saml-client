@@ -6,6 +6,7 @@ use Krixon\SamlClient\Exception\UnsupportedBinding;
 use Krixon\SamlClient\Http\HttpFactory;
 use Krixon\SamlClient\Http\DocumentCodec;
 use Krixon\SamlClient\Protocol\Binding;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\RequestInterface;
@@ -51,13 +52,23 @@ class Client
                 return $this->redirectMessage($uri, $parameters);
         }
 
-        throw new UnsupportedBinding($binding, 'login', [Binding::httpPost(), Binding::httpRedirect()]);
+        throw new UnsupportedBinding($binding, 'login', Binding::httpPost(), Binding::httpRedirect());
     }
 
 
-    public function finish(Response $response)
+    public function consume(ServerRequestInterface $response) : Response
     {
+        $payload = $response->getParsedBody()['SAMLResponse'] ?? null;
 
+        if (!$payload) {
+            // Currently only HTTP-POST is supported for authn responses, so if there was nothing provided
+            // in the request body, assume a different binding was used.
+            throw new UnsupportedBinding(null, 'Authn response', Binding::httpPost());
+        }
+
+        $document = $this->documentCodec->fromPayload($payload);
+
+        return Response::fromDocument($document);
     }
 
 

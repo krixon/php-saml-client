@@ -2,11 +2,8 @@
 
 namespace Krixon\SamlClient\Document;
 
-abstract class Element
+abstract class Element implements WritableElement
 {
-    public abstract function appendTo(SamlDocument $document, \DOMNode $parent) : void;
-
-
     final protected static function appendDomElement(\DOMNode $parent, string $name) : \DOMElement
     {
         $document = $parent instanceof \DOMDocument ? $parent : $parent->ownerDocument;

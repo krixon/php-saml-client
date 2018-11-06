@@ -68,7 +68,7 @@ final class RequestedAuthnContext extends Element
 
     public function appendTo(SamlDocument $document, \DOMNode $parent) : void
     {
-        $document->useNamespace(XmlNamespace::saml());
+        $document->registerNamespace(XmlNamespace::saml());
 
         $element = self::appendDomElement($parent, 'samlp:RequestedAuthnContext');
 
