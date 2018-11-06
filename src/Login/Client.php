@@ -8,8 +8,6 @@ use Krixon\SamlClient\Http\DocumentCodec;
 use Krixon\SamlClient\Protocol\Binding;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
-use Psr\Http\Message\MessageInterface;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class Client
@@ -28,16 +26,12 @@ class Client
     /**
      * Processes a login request and returns an HTTP message.
      *
-     * If a RequestInterface is returned, a server-side HTTP client should ultimately issue that request. In practice,
-     * this will be a POST request to the identity provider containing the login request payload. A RequestInterface
-     * will be returned if the HTTP-POST binding is configured for the request.
-     *
-     * If a ResponseInterface is returned, it should be presented to the user agent which initiated login. In practice,
+     * The returned ResponseInterface should be presented to the user agent which initiated login. In practice,
      * this will be a 302 redirect response with a Location header containing the identity provider's URL along
      * with the login request payload parameters. A ResponseInterface will be returned if the HTTP-Redirect binding
      * is configured for the request.
      */
-    public function login(Request $request) : MessageInterface
+    public function redirect(Request $request) : ResponseInterface
     {
         $binding    = $request->binding();
         $uri        = $request->uri();
@@ -45,14 +39,12 @@ class Client
 
         // TODO: Signing.
 
-        switch (true) {
-            case $binding->isHttpPost():
-                return $this->postMessage($uri, $parameters);
-            case $binding->isHttpRedirect():
-                return $this->redirectMessage($uri, $parameters);
+        if (!$binding->isHttpRedirect()) {
+            // Currently only HTTP-Redirect binding is supported for authn requests.
+            throw new UnsupportedBinding($binding, 'login', Binding::httpRedirect());
         }
 
-        throw new UnsupportedBinding($binding, 'login', Binding::httpPost(), Binding::httpRedirect());
+        return $this->redirectResponse($uri, $parameters);
     }
 
 
@@ -87,7 +79,7 @@ class Client
     }
 
 
-    private function redirectMessage(UriInterface $uri, array $payload) : ResponseInterface
+    private function redirectResponse(UriInterface $uri, array $payload) : ResponseInterface
     {
         $additionalQuery = $this->buildQuery($payload);
         $existingQuery   = $uri->getQuery();
@@ -100,18 +92,6 @@ class Client
             ->createResponse()
             ->withStatus(302)
             ->withHeader('Location', (string)$uri);
-    }
-
-
-    private function postMessage(UriInterface $uri, array $payload) : RequestInterface
-    {
-        $body   = $this->buildQuery($payload);
-        $stream = $this->httpFactory->createStream($body);
-
-        return $this
-            ->httpFactory
-            ->createRequest('POST', $uri)
-            ->withBody($stream);
     }
 
 

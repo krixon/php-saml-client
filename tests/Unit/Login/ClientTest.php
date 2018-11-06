@@ -56,7 +56,7 @@ class ClientTest extends LoginTestCase
             ->relayState('some random state')
             ->build();
 
-        $message = $client->login($request);
+        $message = $client->redirect($request);
 
         static::assertInstanceOf(ResponseInterface::class, $message);
     }

@@ -37,7 +37,7 @@ class LoginTest extends TestCase
             ->appendAuthnContextClass(AuthnContextClass::passwordProtectedTransport())
             ->build();
 
-        $message = $client->login($request);
+        $message = $client->redirect($request);
 
         static::assertInstanceOf(ResponseInterface::class, $message);
 
