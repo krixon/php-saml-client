@@ -24,9 +24,8 @@ class DocumentCodec
     {
         $xml = self::stringify($document);
         $xml = $this->inflatorDeflator->deflate($xml);
-        $xml = base64_encode($xml);
 
-        return rawurlencode($xml);
+        return base64_encode($xml);
     }
 
 
