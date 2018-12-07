@@ -44,4 +44,10 @@ final class Binding
     {
         return $this->binding === self::HTTP_REDIRECT;
     }
+
+
+    public function equals(self $other) : bool
+    {
+        return $other->binding === $this->binding;
+    }
 }

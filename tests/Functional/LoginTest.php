@@ -9,21 +9,20 @@ use Krixon\SamlClient\Login\RequestBuilder;
 use Krixon\SamlClient\Login\Response;
 use Krixon\SamlClient\Name;
 use Krixon\SamlClient\Protocol\AuthnContextClass;
+use Krixon\SamlClient\Protocol\Binding;
 use Krixon\SamlClient\Protocol\Instant;
 use Krixon\SamlClient\Protocol\NameFormat;
 use Krixon\SamlClient\Protocol\NameIdPolicy;
 use Krixon\SamlClient\Protocol\RequestedAuthnContext;
-use Krixon\SamlClient\Protocol\StatusCode;
 use Krixon\SamlClient\Test\TestCase;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class LoginTest extends TestCase
 {
     public function testHttpRedirectBinding()
     {
-        $client   = new Client($this->httpFactory());
-        $uri      = $this->createUri('http://example.com/auth/saml?answer=42');
+        $client = new Client();
+        $uri    = $this->createUri('http://example.com/auth/saml?answer=42');
 
         $request = RequestBuilder
             ::for($uri)
@@ -38,14 +37,9 @@ class LoginTest extends TestCase
             ->appendAuthnContextClass(AuthnContextClass::passwordProtectedTransport())
             ->build();
 
-        $message = $client->redirect($request);
+        $instruction = $client->login($request);
 
-        static::assertInstanceOf(ResponseInterface::class, $message);
-
-        /** @var ResponseInterface $message */
-
-        static::assertSame(1, count($message->getHeader('Location')));
-        static::assertSame(302, $message->getStatusCode());
+        static::assertTrue($instruction->binding()->equals(Binding::httpRedirect()));
 
         // TODO: Check the actual raw xml content once the decoding / inflating code is written.
 //        $expectedUri = '<xml>';
@@ -55,7 +49,7 @@ class LoginTest extends TestCase
 
     public function testConsume()
     {
-        $client = new Client($this->httpFactory());
+        $client = new Client();
 
         $xml = /** @lang XML */'
             <samlp:Response

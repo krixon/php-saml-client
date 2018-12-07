@@ -155,6 +155,26 @@ class RequestBuilder
     }
 
 
+    public function binding(Binding $binding) : self
+    {
+        $this->binding = $binding;
+
+        return $this;
+    }
+
+
+    public function httpRedirectBinding() : self
+    {
+        return $this->binding(Binding::httpRedirect());
+    }
+
+
+    public function httpPostBinding() : self
+    {
+        return $this->binding(Binding::httpPost());
+    }
+
+
     private function reset() : void
     {
         $this->id                    = null;
@@ -166,5 +186,6 @@ class RequestBuilder
         $this->requestedAuthnContext = null;
         $this->nameIdPolicy          = null;
         $this->providerName          = null;
+        $this->binding               = null;
     }
 }
