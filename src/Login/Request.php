@@ -2,13 +2,15 @@
 
 namespace Krixon\SamlClient\Login;
 
-use Krixon\SamlClient\Name;
+use Krixon\SamlClient\Exception\InvalidRelayState;
 use Krixon\SamlClient\Protocol\Binding;
 use Krixon\SamlClient\Protocol\Instant;
 use Krixon\SamlClient\Protocol\NameIdPolicy;
 use Krixon\SamlClient\Protocol\RequestedAuthnContext;
 use Krixon\SamlClient\Protocol\RequestId;
 use Krixon\SamlClient\Document\SamlDocument;
+use Krixon\SamlClient\Protocol\Signature;
+use Krixon\SamlClient\ServiceProvider;
 use Psr\Http\Message\UriInterface;
 
 class Request
@@ -19,6 +21,7 @@ class Request
     private $parameters;
     private $relayState;
     private $document;
+    private $signature;
 
 
     public function __construct(
@@ -26,18 +29,25 @@ class Request
         UriInterface $uri,
         Instant $issueInstant,
         Binding $binding,
+        ServiceProvider $serviceProvider = null,
+        Signature $signature = null,
         bool $forceAuthn = false,
         bool $passive = false,
         RequestedAuthnContext $authnContext = null,
         NameIdPolicy $nameIdPolicy = null,
         string $relayState = null,
-        Name $providerName = null,
         array $parameters = []
     ) {
+        // @see https://www.oasis-open.org/committees/download.php/56780/sstc-saml-bindings-errata-2.0-wd-06-diff.pdf
+        // Section 3.4.3
+        if ($binding->isHttpRedirect() && strlen($relayState) > 80) {
+            throw InvalidRelayState::tooLong();
+        }
 
         $this->uri        = $uri;
         $this->id         = $id;
         $this->binding    = $binding;
+        $this->signature  = $signature;
         $this->parameters = $parameters;
         $this->relayState = $relayState;
 
@@ -47,9 +57,10 @@ class Request
         $root->setAttribute('Version', '2.0');
         $root->setAttribute('ID', $this->id->toString());
         $root->setAttribute('IssueInstant', $issueInstant->toString());
+        $root->setAttribute('Destination', $uri->__toString());
 
-        if ($providerName) {
-            $root->setAttribute('ProviderName', $providerName->toString());
+        if ($serviceProvider) {
+            $serviceProvider->applyToLoginRequest($document, $root);
         }
 
         if ($forceAuthn) {
@@ -58,6 +69,12 @@ class Request
 
         if ($passive) {
             $root->setAttribute('IsPassive', 'true');
+        }
+
+        // Signature must not be embedded for HTTP-Redirect binding.
+        // Instead the final encoded payload will be signed and the signature provided via a URL parameter.
+        if ($signature && !$binding->isHttpRedirect()) {
+            $signature->appendTo($document, $root);
         }
 
         if ($nameIdPolicy) {
@@ -75,6 +92,12 @@ class Request
     public function toDocument() : SamlDocument
     {
         return $this->document;
+    }
+
+
+    public function signature() : ?Signature
+    {
+        return $this->signature;
     }
 
 
@@ -130,6 +153,12 @@ class Request
     public function relayState() : ?string
     {
         return $this->relayState;
+    }
+
+
+    public function hasRelayState() : bool
+    {
+        return null !== $this->relayState;
     }
 
 

@@ -3,39 +3,39 @@
 namespace Krixon\SamlClient\Test\Unit\Login;
 
 use GuzzleHttp\Psr7\Uri;
+use Krixon\SamlClient\Http\MessageCodec;
 use Krixon\SamlClient\Login\Client;
 use Krixon\SamlClient\Login\RequestBuilder;
-use Krixon\SamlClient\Http\DocumentCodec;
 use Krixon\SamlClient\Login\RequestInstruction;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class ClientTest extends LoginTestCase
 {
     /**
-     * @var DocumentCodec|MockObject
+     * @var MessageCodec|MockObject
      */
-    private $documentCodec;
+    private $messageCodec;
 
 
     protected function setUp()
     {
         parent::setUp();
 
-        $this->documentCodec = $this->createMock(DocumentCodec::class);
+        $this->messageCodec = $this->createMock(MessageCodec::class);
     }
 
 
     public function testCanBeConstructed()
     {
-        static::assertInstanceOf(Client::class, new Client($this->documentCodec));
+        static::assertInstanceOf(Client::class, new Client($this->messageCodec));
     }
 
 
     public function testProducesRequestInstruction()
     {
-        $this->documentCodec->method('toPayload')->willReturn('converted request');
+        $this->messageCodec->method('encode')->willReturn('converted request');
 
-        $client  = new Client($this->documentCodec);
+        $client  = new Client($this->messageCodec);
         $request = RequestBuilder::for(new Uri('http://example.com'))->build();
 
         $instruction = $client->login($request);

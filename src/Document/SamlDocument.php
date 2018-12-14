@@ -81,6 +81,16 @@ final class SamlDocument extends \DOMDocument
     }
 
 
+    public function toString() : string
+    {
+        $this->formatOutput       = false;
+        $this->preserveWhiteSpace = false;
+
+        // Render the document element itself (ie the root node) as we don't want the XML declaration etc.
+        return $this->saveXML($this->documentElement);
+    }
+
+
     public function root() : \DOMElement
     {
         return $this->documentElement;
@@ -104,5 +114,17 @@ final class SamlDocument extends \DOMDocument
 //        }
 
         return $xpath->query($expression, $context);
+    }
+
+
+    /**
+     * Removes the <ds:Signature> element on the document itself. Signatures on other elements such as a signed
+     * assertion are not removed.
+     *
+     * This is necessary if the
+     */
+    public function removeSignature() : void
+    {
+
     }
 }

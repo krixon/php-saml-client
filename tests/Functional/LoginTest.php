@@ -3,6 +3,7 @@
 namespace Krixon\SamlClient\Test\Functional;
 
 use Krixon\SamlClient\Document\SamlDocument;
+use Krixon\SamlClient\Http\Deflate;
 use Krixon\SamlClient\Http\DocumentCodec;
 use Krixon\SamlClient\Login\Client;
 use Krixon\SamlClient\Login\RequestBuilder;
@@ -14,6 +15,7 @@ use Krixon\SamlClient\Protocol\Instant;
 use Krixon\SamlClient\Protocol\NameFormat;
 use Krixon\SamlClient\Protocol\NameIdPolicy;
 use Krixon\SamlClient\Protocol\RequestedAuthnContext;
+use Krixon\SamlClient\ServiceProvider;
 use Krixon\SamlClient\Test\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -23,13 +25,14 @@ class LoginTest extends TestCase
     {
         $client = new Client();
         $uri    = $this->createUri('http://example.com/auth/saml?answer=42');
+        $sp     = new ServiceProvider('jmc', Name::fromString('Jupiter Mining Corp.'));
 
         $request = RequestBuilder
             ::for($uri)
             ->issueInstant(Instant::fromString('2018-11-05T12:18:22Z'))
             ->parameters(['name' => 'rimmer', 'type' => 'git'])
             ->relayState('custom state data')
-            ->providerName(Name::fromString('Jupiter Mining Corp.'))
+            ->serviceProvider($sp)
             ->passive()
             ->forceAuthn()
             ->nameIdPolicy(new NameIdPolicy('Qualifier', NameFormat::emailAddress(), true))
@@ -121,7 +124,7 @@ class LoginTest extends TestCase
         return $this
             ->createServerRequest()
             ->withParsedBody([
-                'SAMLResponse' => (new DocumentCodec())->toPayload(SamlDocument::import($xml))
+                'SAMLResponse' => (new Deflate())->encode(SamlDocument::import($xml))
             ]);
     }
 }

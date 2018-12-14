@@ -3,6 +3,7 @@
 namespace Krixon\SamlClient\Login;
 
 use Krixon\SamlClient\Name;
+use Krixon\SamlClient\Protocol\AssertionConsumerService;
 use Krixon\SamlClient\Protocol\AuthnContextClass;
 use Krixon\SamlClient\Organisation;
 use Krixon\SamlClient\Protocol\Binding;
@@ -10,6 +11,8 @@ use Krixon\SamlClient\Protocol\Instant;
 use Krixon\SamlClient\Protocol\NameIdPolicy;
 use Krixon\SamlClient\Protocol\RequestedAuthnContext;
 use Krixon\SamlClient\Protocol\RequestId;
+use Krixon\SamlClient\Protocol\Signature;
+use Krixon\SamlClient\ServiceProvider;
 use Psr\Http\Message\UriInterface;
 
 class RequestBuilder
@@ -22,9 +25,10 @@ class RequestBuilder
     private $passive;
     private $requestedAuthnContext;
     private $nameIdPolicy;
-    private $providerName;
     private $relayState;
     private $binding;
+    private $serviceProvider;
+    private $signature;
 
 
     public function __construct(UriInterface $uri)
@@ -48,12 +52,13 @@ class RequestBuilder
             $this->uri,
             $this->issueInstant ?: Instant::now(),
             $this->binding ?: Binding::httpRedirect(),
+            $this->serviceProvider,
+            $this->signature,
             $this->forceAuthn,
             $this->passive,
             $this->requestedAuthnContext,
             $this->nameIdPolicy,
             $this->relayState,
-            $this->providerName,
             $this->parameters
         );
 
@@ -131,22 +136,6 @@ class RequestBuilder
     }
 
 
-    public function providerName(Name $providerName) : self
-    {
-        $this->providerName = $providerName;
-
-        return $this;
-    }
-
-
-    public function providerNameFromOrganisation(Organisation $organisation) : self
-    {
-        $this->providerName = $organisation->displayName();
-
-        return $this;
-    }
-
-
     public function relayState(string $state) : self
     {
         $this->relayState = $state;
@@ -175,17 +164,34 @@ class RequestBuilder
     }
 
 
+    public function serviceProvider(ServiceProvider $serviceProvider) : self
+    {
+        $this->serviceProvider = $serviceProvider;
+
+        return $this;
+    }
+
+
+    public function signature(Signature $signature) : self
+    {
+        $this->signature = $signature;
+
+        return $this;
+    }
+
+
     private function reset() : void
     {
-        $this->id                    = null;
-        $this->uri                   = null;
-        $this->issueInstant          = null;
-        $this->parameters            = [];
-        $this->forceAuthn            = false;
-        $this->passive               = false;
-        $this->requestedAuthnContext = null;
-        $this->nameIdPolicy          = null;
-        $this->providerName          = null;
-        $this->binding               = null;
+        $this->id                       = null;
+        $this->uri                      = null;
+        $this->issueInstant             = null;
+        $this->parameters               = [];
+        $this->forceAuthn               = false;
+        $this->passive                  = false;
+        $this->requestedAuthnContext    = null;
+        $this->nameIdPolicy             = null;
+        $this->binding                  = null;
+        $this->serviceProvider          = null;
+        $this->signature                = null;
     }
 }

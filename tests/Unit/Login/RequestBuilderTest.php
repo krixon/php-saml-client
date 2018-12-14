@@ -3,12 +3,14 @@
 namespace Krixon\SamlClient\Test\Unit\Login;
 
 use Krixon\SamlClient\Name;
+use Krixon\SamlClient\Protocol\AssertionConsumerService;
 use Krixon\SamlClient\Protocol\AuthnContextClass;
 use Krixon\SamlClient\Organisation;
 use Krixon\SamlClient\Protocol\Instant;
 use Krixon\SamlClient\Login\RequestBuilder;
 use Krixon\SamlClient\Protocol\NameIdPolicy;
 use Krixon\SamlClient\Protocol\RequestedAuthnContext;
+use Krixon\SamlClient\ServiceProvider;
 use Krixon\SamlClient\Test\Unit\TestCase;
 
 class RequestBuilderTest extends TestCase
@@ -25,6 +27,7 @@ class RequestBuilderTest extends TestCase
              ID="%s"
              IssueInstant="2018-01-01T00:00:00Z"
              Version="2.0"
+             Destination="http://example.com"
            />',
             $request->id()->toString()
         );
@@ -42,7 +45,7 @@ class RequestBuilderTest extends TestCase
             ->nameIdPolicy(new NameIdPolicy('qualifier', null, true))
             ->requestedAuthnContext(RequestedAuthnContext::exact(AuthnContextClass::password()))
             ->appendAuthnContextClass(AuthnContextClass::kerberos())
-            ->providerName(Name::fromString('Jupiter Mining Corp.'))
+            ->serviceProvider(new ServiceProvider('jmc', Name::fromString('Jupiter Mining Corp.')))
             ->build();
 
         $expected = sprintf(/** @lang XML */'
@@ -52,10 +55,12 @@ class RequestBuilderTest extends TestCase
               ID="%s"
               IssueInstant="2018-01-01T00:00:00Z"
               Version="2.0"
+              Destination="http://example.com"
               IsPassive="true"
               ForceAuthn="true"
               ProviderName="Jupiter Mining Corp."
             >
+                <saml:Issuer>jmc</saml:Issuer>
                 <samlp:NameIDPolicy AllowCreate="true" SPNameQualifier="qualifier"/>
                 <samlp:RequestedAuthnContext Comparison="exact">
                     <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:Password</saml:AuthnContextClassRef>
@@ -83,40 +88,12 @@ class RequestBuilderTest extends TestCase
              ID="%s"
              IssueInstant="2018-01-01T00:00:00Z"
              Version="2.0"
+             Destination="http://example.com"
             >
                 <samlp:RequestedAuthnContext Comparison="exact">
                     <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:Kerberos</saml:AuthnContextClassRef>
                 </samlp:RequestedAuthnContext>
             </samlp:AuthnRequest>',
-            $request->id()->toString()
-        );
-
-        static::assertXmlStringEqualsXmlString($expected, $request->toDocument());
-    }
-
-
-    public function testUsesOrganisationDisplayNameAsProviderName()
-    {
-        $organisation = new Organisation(
-            'en-US',
-            Name::fromString('Jupiter Mining Corp.'),
-            Name::fromString('Jupiter Mining'),
-            $this->createUri()
-        );
-
-        $request = self
-            ::baseBuilder()
-            ->providerNameFromOrganisation($organisation)
-            ->build();
-
-        $expected = sprintf(/** @lang XML */'
-           <samlp:AuthnRequest
-             xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
-             ID="%s"
-             IssueInstant="2018-01-01T00:00:00Z"
-             Version="2.0"
-             ProviderName="Jupiter Mining"
-           />',
             $request->id()->toString()
         );
 
