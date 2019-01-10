@@ -70,4 +70,10 @@ final class Status
     {
         return $this->detail;
     }
+
+
+    public function isSuccess() : bool
+    {
+        return $this->code->isSuccess();
+    }
 }

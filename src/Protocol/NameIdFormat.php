@@ -2,7 +2,9 @@
 
 namespace Krixon\SamlClient\Protocol;
 
-final class NameFormat
+use Krixon\SamlClient\Exception\InvalidNameFormat;
+
+final class NameIdFormat
 {
     private const ENCRYPTED         = 'urn:oasis:names:tc:SAML:2.0:nameid-format:encrypted';
     private const EMAIL_ADDRESS     = 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress';
@@ -14,12 +16,34 @@ final class NameFormat
     private const WINDOWS_DOMAIN_QN = 'urn:oasis:names:tc:SAML:1.1:nameid-format:WindowsDomainQualifiedName';
     private const X509_SUBJECT_NAME = 'urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName';
 
+    private const ENUM = [
+        self::ENCRYPTED,
+        self::EMAIL_ADDRESS,
+        self::ENTITY,
+        self::KERBEROS,
+        self::PERSISTENT,
+        self::TRANSIENT,
+        self::UNSPECIFIED,
+        self::WINDOWS_DOMAIN_QN,
+        self::X509_SUBJECT_NAME,
+    ];
+
     private $format;
 
 
     private function __construct(string $format)
     {
+        if (!in_array($format, self::ENUM, true)) {
+            throw new InvalidNameFormat($format);
+        }
+
         $this->format = $format;
+    }
+
+
+    public static function fromString(string $format)
+    {
+        return new self($format);
     }
 
 
@@ -83,7 +107,7 @@ final class NameFormat
     }
 
 
-    public function equals(NameFormat $other) : bool
+    public function equals(self $other) : bool
     {
         return $this->format === $other->format;
     }

@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="_4d81bf2eb27f65bbe382" Version="2.0" IssueInstant="2019-01-07T13:01:18Z" Destination="http://localhost:10015/consume.php">
+    <saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">urn:krixon.eu.auth0.com</saml:Issuer>
+    <samlp:Status>
+        <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
+    </samlp:Status>
+    <saml:Assertion xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" Version="2.0" ID="_DHaRn8qZv1jr3UOpKHUZgtsiPdA3BKTk" IssueInstant="2019-01-07T13:01:18.141Z">
+        <saml:Issuer>urn:krixon.eu.auth0.com</saml:Issuer>
+        <saml:Subject>
+            <saml:NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified">karlrixon@gmail.com</saml:NameID>
+            <saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
+                <saml:SubjectConfirmationData NotOnOrAfter="2019-01-07T14:01:18.141Z" Recipient="http://localhost:10015/consume.php"/>
+            </saml:SubjectConfirmation>
+        </saml:Subject>
+        <saml:Conditions NotBefore="2019-01-07T13:01:18.141Z" NotOnOrAfter="2019-01-07T14:01:18.141Z"/>
+        <saml:AuthnStatement AuthnInstant="2019-01-07T13:01:18.141Z" SessionIndex="_8aKbNgw_glEw7Ko2YdBKahSGbyOnr2Cq">
+            <saml:AuthnContext>
+                <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified</saml:AuthnContextClassRef>
+            </saml:AuthnContext>
+        </saml:AuthnStatement>
+        <saml:AttributeStatement xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <saml:Attribute Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml:AttributeValue xsi:type="xs:string">karlrixon@gmail.com</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute Name="http://example.com/int" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml:AttributeValue xsi:type="xs:int">123456789</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute Name="http://example.com/negativeInt" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml:AttributeValue xsi:type="xs:int">-123456789</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute Name="http://example.com/integer" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml:AttributeValue xsi:type="xs:integer">123456789</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute Name="http://example.com/positiveInteger" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml:AttributeValue xsi:type="xs:positiveInteger">666</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute Name="http://example.com/nonPositiveInteger" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml:AttributeValue xsi:type="xs:nonPositiveInteger">-666</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute Name="http://example.com/negativeInteger" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml:AttributeValue xsi:type="xs:negativeInteger">-666</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute Name="http://example.com/nonNegativeInteger" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml:AttributeValue xsi:type="xs:nonNegativeInteger">666</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute Name="http://example.com/short" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml:AttributeValue xsi:type="xs:short">100</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute Name="http://example.com/negativeShort" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml:AttributeValue xsi:type="xs:short">-100</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute Name="http://example.com/unsignedShort" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml:AttributeValue xsi:type="xs:unsignedShort">255</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute Name="http://example.com/long" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml:AttributeValue xsi:type="xs:long">12345678987654321</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute Name="http://example.com/negativeLong" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml:AttributeValue xsi:type="xs:long">-12345678987654321</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute Name="http://example.com/unsignedLong" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml:AttributeValue xsi:type="xs:unsignedLong">12345678987654321</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute Name="http://example.com/byte" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml:AttributeValue xsi:type="xs:byte">5</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute Name="http://example.com/negativeByte" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml:AttributeValue xsi:type="xs:byte">-5</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute Name="http://example.com/unsignedByte" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml:AttributeValue xsi:type="xs:unsignedByte">5</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute Name="http://example.com/decimal" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml:AttributeValue xsi:type="xs:decimal">42.01</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute Name="http://example.com/float" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml:AttributeValue xsi:type="xs:float">42.01</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute Name="http://example.com/double" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml:AttributeValue xsi:type="xs:double">42.01</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute Name="http://example.com/datetime" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml:AttributeValue xsi:type="xs:dateTime">2000-01-01T12:15:30Z</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute Name="http://example.com/datetimeNonUtc" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml:AttributeValue xsi:type="xs:dateTime">2000-01-01T12:15:30+05:00</saml:AttributeValue>
+            </saml:Attribute>
+        </saml:AttributeStatement>
+    </saml:Assertion>
+</samlp:Response>

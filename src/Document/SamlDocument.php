@@ -2,10 +2,10 @@
 
 namespace Krixon\SamlClient\Document;
 
-final class SamlDocument extends \DOMDocument
+final class SamlDocument extends Document
 {
     /** @noinspection PhpHierarchyChecksInspection LSP doesn't apply to constructors! */
-    private function __construct()
+    protected function __construct()
     {
         parent::__construct();
     }
@@ -31,46 +31,9 @@ final class SamlDocument extends \DOMDocument
     }
 
 
-    public static function import(string $xml)
+    public static function import(string $xml) : self
     {
-        // Prevent XXE attacks caused by referencing external entities in the XML.
-        // https://www.owasp.org/index.php/XML_External_Entity_(XXE)_Processing
-        if (stripos($xml, '<!ENTITY') !== false) {
-            throw new Exception\InvalidDocument('Use of <!ENTITY> in XML is not supported.');
-        }
-
-        // DomDocument::loadXML will trigger a warning on invalid XML rather than throwing.
-        // To work around that, register a temporary error handler.
-        set_error_handler(function ($number, $message) {
-            if ($number === E_WARNING && stripos($message, 'DOMDocument::loadXML')) {
-                throw new Exception\InvalidDocument($message);
-            }
-            // Invoke the previous error handler.
-            return false;
-        });
-
-        // libxml2 version >=2.6 contains entity substitution limits designed to prevent both exponential and
-        // quadratic attacks. We should also have caught any uses of ENTITY above. To be safe and to support earlier
-        // libxml2 versions however, explicitly disable entity loading.
-        $entityLoader = libxml_disable_entity_loader(true);
-
-        $document = new self();
-
-        try {
-            $result = $document->loadXML($xml);
-        } finally {
-            libxml_disable_entity_loader($entityLoader);
-            restore_error_handler();
-        }
-
-        if (!$result) {
-            // Errors should already have been caught by the error handler, but just in case...
-            throw new Exception\InvalidDocument('Unable to load XML from string.');
-        }
-
-        if (null === $document->documentElement) {
-            throw new Exception\InvalidDocument('Unable to load XML from string. A root element is required.');
-        }
+        $document = parent::import($xml);
 
         $version = $document->documentElement->getAttribute('Version');
         if ($version !== '2.0') {
@@ -81,50 +44,33 @@ final class SamlDocument extends \DOMDocument
     }
 
 
-    public function toString() : string
-    {
-        $this->formatOutput       = false;
-        $this->preserveWhiteSpace = false;
-
-        // Render the document element itself (ie the root node) as we don't want the XML declaration etc.
-        return $this->saveXML($this->documentElement);
-    }
-
-
-    public function root() : \DOMElement
-    {
-        return $this->documentElement;
-    }
-
-
-    public function registerNamespace(XmlNamespace $namespace) : void
-    {
-        $this->root()->setAttributeNS('http://www.w3.org/2000/xmlns/', $namespace->qualifiedName(), $namespace->urn());
-    }
-
-
     public function query(string $expression, \DOMElement $context = null) : \DOMNodeList
     {
         $xpath   = new \DOMXPath($this);
         $context = $context ?: $this->documentElement;
 
         // TODO: Might not be needed - see 3rd arg to XPath::query.
-//        foreach (XmlNamespace::all() as $namespace) {
-//            $xpath->registerNamespace($namespace->qualifiedName(), $namespace->urn());
-//        }
+        foreach (XmlNamespace::all() as $namespace) {
+            $xpath->registerNamespace($namespace->prefix(), $namespace->urn());
+        }
+
+//        $xpath->registerNamespace('samlp', 'urn:oasis:names:tc:SAML:2.0:protocol');
+//        $xpath->registerNamespace('saml', 'urn:oasis:names:tc:SAML:2.0:assertion');
+//        $xpath->registerNamespace('ds', 'http://www.w3.org/2000/09/xmldsig#');
+//        $xpath->registerNamespace('xenc', 'http://www.w3.org/2001/04/xmlenc#');
 
         return $xpath->query($expression, $context);
     }
 
 
-    /**
-     * Removes the <ds:Signature> element on the document itself. Signatures on other elements such as a signed
-     * assertion are not removed.
-     *
-     * This is necessary if the
-     */
-    public function removeSignature() : void
+    public function hasAssertion() : bool
     {
+        return $this->getElementsByTagName('Assertion')->length > 0;
+    }
 
+
+    public function hasEncryptedAssertion() : bool
+    {
+        return $this->getElementsByTagName('EncryptedAssertion')->length > 0;
     }
 }

@@ -6,6 +6,7 @@ use Krixon\SamlClient\Exception\UnsupportedBinding;
 use Krixon\SamlClient\Http\Deflate;
 use Krixon\SamlClient\Http\MessageCodec;
 use Krixon\SamlClient\Protocol\Binding;
+use Krixon\SamlClient\Security\Key;
 use Psr\Http\Message\ServerRequestInterface;
 
 class Client
@@ -36,7 +37,7 @@ class Client
     }
 
 
-    public function consume(ServerRequestInterface $response) : Response
+    public function consume(ServerRequestInterface $response, Key $decryptionKey = null) : Response
     {
         $payload = $response->getParsedBody()['SAMLResponse'] ?? null;
 
@@ -48,7 +49,7 @@ class Client
 
         $document = $this->messageCodec->decode($payload);
 
-        return Response::fromDocument($document);
+        return Response::fromDocument($document, $decryptionKey);
     }
 
 

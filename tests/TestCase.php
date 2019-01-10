@@ -27,4 +27,22 @@ class TestCase extends \PHPUnit\Framework\TestCase
     ) : ServerRequestInterface {
         return new ServerRequest($method, $uri);
     }
+
+
+    protected function fixturePath($file) : string
+    {
+        return trim(__DIR__ . '/fixtures/' . ltrim($file, '/'));
+    }
+
+
+    protected function fixtureContent($file) : string
+    {
+        $file = $this->fixturePath($file);
+
+        if (!is_readable($file)) {
+            throw new \Exception("Fixture file $file cannot be read.");
+        }
+
+        return file_get_contents($file);
+    }
 }

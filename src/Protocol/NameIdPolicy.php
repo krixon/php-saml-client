@@ -19,16 +19,16 @@ final class NameIdPolicy extends Element
 
 
     /**
-     * @param string|null $nameQualifier Specifies that the assertion subject's identifier be returned (or created)
+     * @param string|null  $nameQualifier Specifies that the assertion subject's identifier be returned (or created)
      *                                   in the namespace of a service provider other than the requester, or in the
      *                                   namespace of an affiliation group of service providers.
-     * @param NameFormat  $format        Specifies the desired name identifier format.
-     * @param bool        $allowCreate   indicates whether the requester grants to the identity provider, in the course
+     * @param NameIdFormat $format        Specifies the desired name identifier format.
+     * @param bool         $allowCreate   indicates whether the requester grants to the identity provider, in the course
      *                                   of fulfilling the request, permission to create a new identifier.
      */
     public function __construct(
         string $nameQualifier = null,
-        NameFormat $format = null,
+        NameIdFormat $format = null,
         bool $allowCreate = false
     ) {
         if (trim($nameQualifier) === '') {
@@ -36,13 +36,13 @@ final class NameIdPolicy extends Element
         }
 
         if (null === $format) {
-            $format = NameFormat::unspecified();
+            $format = NameIdFormat::unspecified();
         }
 
         // The use of the AllowCreate attribute MUST NOT be used and SHOULD be ignored in conjunction with requests
         // for or assertions issued with name identifiers with a Format of
         // urn:oasis:names:tc:SAML:2.0:nameid-format:transient (they preclude any such state in and of themselves).
-        if ($format->equals(NameFormat::transient())) {
+        if ($format->equals(NameIdFormat::transient())) {
             $allowCreate = false;
         }
 
@@ -77,7 +77,7 @@ final class NameIdPolicy extends Element
 
     private function isFormatDefault() : bool
     {
-        return $this->format->equals(NameFormat::unspecified());
+        return $this->format->equals(NameIdFormat::unspecified());
     }
 
 

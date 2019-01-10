@@ -2,7 +2,7 @@
 
 namespace Krixon\SamlClient\Test\Unit\Protocol;
 
-use Krixon\SamlClient\Protocol\NameFormat;
+use Krixon\SamlClient\Protocol\NameIdFormat;
 use Krixon\SamlClient\Protocol\NameIdPolicy;
 use Krixon\SamlClient\Test\Unit\TestCase;
 
@@ -16,7 +16,7 @@ class NameIdPolicyTest extends TestCase
 
     public function testTransientFormatForcesAllowCreateToBeFalse()
     {
-        $policy   = new NameIdPolicy(null, NameFormat::transient(), true);
+        $policy   = new NameIdPolicy(null, NameIdFormat::transient(), true);
         $expected = '<samlp:NameIDPolicy Format="urn:oasis:names:tc:SAML:2.0:nameid-format:transient"/>';
 
         static::assertElementProducesExpectedXml($expected, $policy);
@@ -48,7 +48,7 @@ class NameIdPolicyTest extends TestCase
                 ''
             ],
             'Format: Email address' => [
-                new NameIdPolicy(null, NameFormat::emailAddress()),
+                new NameIdPolicy(null, NameIdFormat::emailAddress()),
                 '<samlp:NameIDPolicy Format="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"/>'
             ],
             'Allow create: true' => [
@@ -60,7 +60,7 @@ class NameIdPolicyTest extends TestCase
                 ''
             ],
             'Everything set explicitly' => [
-                new NameIdPolicy('qualifier', NameFormat::emailAddress(), true),
+                new NameIdPolicy('qualifier', NameIdFormat::emailAddress(), true),
                 '<samlp:NameIDPolicy ' .
                 '  Format="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress" ' .
                 '  AllowCreate="true" ' .

@@ -8,7 +8,7 @@ final class Key
     private $passphrase;
 
 
-    private function __construct(string $key, string $passphrase = null)
+    public function __construct(string $key, string $passphrase = null)
     {
         if (strpos($key, 'file://') === 0) {
             $key = $this->readFile($key);

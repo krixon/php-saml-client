@@ -2,7 +2,7 @@
 
 namespace Krixon\SamlClient\Test\Unit\Protocol;
 
-use Krixon\SamlClient\Protocol\NameFormat;
+use Krixon\SamlClient\Protocol\NameIdFormat;
 use Krixon\SamlClient\Test\Unit\TestCase;
 
 class NameFormatTest extends TestCase
@@ -11,7 +11,7 @@ class NameFormatTest extends TestCase
     {
         static::assertSame(
             'urn:oasis:names:tc:SAML:2.0:nameid-format:encrypted',
-            NameFormat::encrypted()->toString()
+            NameIdFormat::encrypted()->toString()
         );
     }
 
@@ -20,7 +20,7 @@ class NameFormatTest extends TestCase
     {
         static::assertSame(
             'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
-            NameFormat::emailAddress()->toString()
+            NameIdFormat::emailAddress()->toString()
         );
     }
 
@@ -29,7 +29,7 @@ class NameFormatTest extends TestCase
     {
         static::assertSame(
             'urn:oasis:names:tc:SAML:2.0:nameid-format:entity',
-            NameFormat::entity()->toString()
+            NameIdFormat::entity()->toString()
         );
     }
 
@@ -38,7 +38,7 @@ class NameFormatTest extends TestCase
     {
         static::assertSame(
             'urn:oasis:names:tc:SAML:2.0:nameid-format:kerberos',
-            NameFormat::kerberos()->toString()
+            NameIdFormat::kerberos()->toString()
         );
     }
 
@@ -47,7 +47,7 @@ class NameFormatTest extends TestCase
     {
         static::assertSame(
             'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent',
-            NameFormat::persistent()->toString()
+            NameIdFormat::persistent()->toString()
         );
     }
 
@@ -56,7 +56,7 @@ class NameFormatTest extends TestCase
     {
         static::assertSame(
             'urn:oasis:names:tc:SAML:2.0:nameid-format:transient',
-            NameFormat::transient()->toString()
+            NameIdFormat::transient()->toString()
         );
     }
 
@@ -65,7 +65,7 @@ class NameFormatTest extends TestCase
     {
         static::assertSame(
             'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified',
-            NameFormat::unspecified()->toString()
+            NameIdFormat::unspecified()->toString()
         );
     }
 
@@ -74,7 +74,7 @@ class NameFormatTest extends TestCase
     {
         static::assertSame(
             'urn:oasis:names:tc:SAML:1.1:nameid-format:WindowsDomainQualifiedName',
-            NameFormat::windowsDomainQualifiedName()->toString()
+            NameIdFormat::windowsDomainQualifiedName()->toString()
         );
     }
 
@@ -83,7 +83,7 @@ class NameFormatTest extends TestCase
     {
         static::assertSame(
             'urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName',
-            NameFormat::x509SubjectName()->toString()
+            NameIdFormat::x509SubjectName()->toString()
         );
     }
 }

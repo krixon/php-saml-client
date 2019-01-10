@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="_4d81bf2eb27f65bbe382" Version="2.0"
+                IssueInstant="2019-01-07T13:01:18Z" Destination="http://localhost:10015/consume.php">
+    <saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">urn:krixon.eu.auth0.com</saml:Issuer>
+    <samlp:Status>
+        <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
+    </samlp:Status>
+
+    <saml:EncryptedAssertion xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">
+        <!-- This is encrypted using the 512b-rsa-example-cert.pem fixture file. The corresponding key can be used to decrypt. -->
+        <xenc:EncryptedData xmlns:xenc="http://www.w3.org/2001/04/xmlenc#"
+                            xmlns:dsig="http://www.w3.org/2000/09/xmldsig#"
+                            Type="http://www.w3.org/2001/04/xmlenc#Element">
+            <xenc:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#aes128-cbc"/>
+            <dsig:KeyInfo xmlns:dsig="http://www.w3.org/2000/09/xmldsig#">
+                <xenc:EncryptedKey>
+                    <xenc:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#rsa-1_5"/>
+                    <xenc:CipherData>
+                        <xenc:CipherValue>
+                            mp3brh73bVNsl0GJ5aayFdEKlg9GGJ+Ly/wwi7F7ODFk8mIY5KMsVU2t7v3wItcV6cATKketg0ATafSfugB4fg==
+                        </xenc:CipherValue>
+                    </xenc:CipherData>
+                </xenc:EncryptedKey>
+            </dsig:KeyInfo>
+            <xenc:CipherData>
+                <xenc:CipherValue>
+                    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
+                </xenc:CipherValue>
+            </xenc:CipherData>
+        </xenc:EncryptedData>
+    </saml:EncryptedAssertion>
+</samlp:Response>
