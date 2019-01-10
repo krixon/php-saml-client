@@ -5,11 +5,8 @@ namespace Krixon\SamlClient\Protocol;
 class Attribute
 {
     private $name;
-
     private $nameFormat;
-
     private $friendlyName;
-
     private $values;
 
 
@@ -41,6 +38,12 @@ class Attribute
     public function friendlyName() : string
     {
         return $this->friendlyName;
+    }
+
+
+    public function isNamed(string $name) : bool
+    {
+        return $this->name === $name || $this->friendlyName === $name;
     }
 
 

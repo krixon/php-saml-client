@@ -10,6 +10,9 @@ final class Assertion
     private $attributes;
 
 
+    /**
+     * @param Attribute[] $attributes
+     */
     public function __construct(array $attributes)
     {
         $this->attributes = $attributes;
@@ -27,6 +30,62 @@ final class Assertion
     public function attributes() : array
     {
         return $this->attributes;
+    }
+
+
+    public function attribute(string $name) : ?Attribute
+    {
+        foreach ($this->attributes as $attribute) {
+            if ($attribute->isNamed($name)) {
+                return $attribute;
+            }
+        }
+
+        return null;
+    }
+
+
+    public function firstAttributeValue(string $name, $default = null)
+    {
+        $attribute = $this->attribute($name);
+
+        return $attribute ? $attribute->firstValue() : $default;
+    }
+
+
+    public function nameIdentifierAttribute() : ?string
+    {
+        return $this->firstAttributeValue('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier');
+    }
+
+
+    public function emailAttribute() : ?string
+    {
+        // TODO: Could also check:
+        //  http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn
+        //  http://schemas.xmlsoap.org/claims/EmailAddress
+        //  See: https://docs.microsoft.com/en-us/windows-server/identity/ad-fs/technical-reference/the-role-of-claims
+        return $this->firstAttributeValue('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress');
+    }
+
+
+    public function nameAttribute() : ?string
+    {
+        // TODO: Could also check http://schemas.xmlsoap.org/claims/CommonName?
+        //       https://docs.microsoft.com/en-us/windows-server/identity/ad-fs/technical-reference/the-role-of-claims
+        return $this->firstAttributeValue('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name');
+    }
+
+
+    public function givenNameAttribute() : ?string
+    {
+        return $this->firstAttributeValue('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname');
+    }
+
+
+    public function surnameAttribute() : ?string
+    {
+        return $this->firstAttributeValue('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname');
     }
 
 
