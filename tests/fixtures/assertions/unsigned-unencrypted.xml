@@ -7,7 +7,8 @@
 	<saml:Assertion xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" Version="2.0" ID="_DHaRn8qZv1jr3UOpKHUZgtsiPdA3BKTk" IssueInstant="2019-01-07T13:01:18.141Z">
 		<saml:Issuer>urn:krixon.eu.auth0.com</saml:Issuer>
 		<saml:Subject>
-			<saml:NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified">karlrixon@gmail.com</saml:NameID>
+			<saml:NameID SPNameQualifier="http://example.com"
+			             Format="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress">karlrixon@gmail.com</saml:NameID>
 			<saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
 				<saml:SubjectConfirmationData NotOnOrAfter="2019-01-07T14:01:18.141Z" Recipient="http://localhost:10015/consume.php"/>
 			</saml:SubjectConfirmation>

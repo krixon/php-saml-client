@@ -77,21 +77,27 @@ class Document extends \DOMDocument
 
     public function decrypt(Key $privateKey) : self
     {
-        $document = clone $this;
+        // TODO: This method and decryptElement can be extracted to an external service.
+        $document = $this;
+        $enc      = new XMLSecEnc();
 
-        // Locate the encrypted data in the document.
+        while ($encryptedData = $enc->locateEncryptedData($document)) {
+            if (!$encryptedData instanceof \DOMElement) {
+                throw new DecryptionFailed('Decryption failed. Cannot locate encrypted data in response.');
+            }
 
-        $enc           = new XMLSecEnc();
-        $encryptedData = $enc->locateEncryptedData($document);
-
-        if (!$encryptedData instanceof \DOMElement) {
-            throw new DecryptionFailed('Decryption failed. Cannot locate encrypted data in response.');
+            $document = self::decryptElement($enc, $encryptedData, $privateKey);
         }
 
-        // Locate the key data in the document.
+        return $document;
+    }
 
-        $enc->setNode($encryptedData);
-        $enc->type = $encryptedData->getAttribute('Type');
+
+    private static function decryptElement(XMLSecEnc $enc, \DOMElement $element, Key $privateKey) : SamlDocument
+    {
+        $enc->setNode($element);
+
+        $enc->type = $element->getAttribute('Type');
         $keyData   = $enc->locateKey();
 
         if (!$keyData) {
@@ -125,22 +131,39 @@ class Document extends \DOMDocument
             throw new DecryptionFailed('Decryption failed.', $e);
         }
 
+        // This is a workaround for the case where only a subset of the XML document was encrypted.
+        // In that case, we may miss the namespaces needed to parse the XML as they might be defined on a parent
+        // element which is not present in $decryptedXml.
+
+        $decryptedXml = sprintf(
+            '<root %s>%s</root>',
+            XmlNamespace::attributeString(),
+            $decryptedXml
+        );
+
         $decrypted = Document::import($decryptedXml);
 
         // At this stage we have decrypted XML representing the first encrypted element in the document.
         // Replace that element with the decrypted version.
 
-        if ($encryptedData->parentNode instanceof \DOMDocument) {
-            // Encrypted data was previously at the root; nothing else to do.
-            return $decrypted;
+        /** @var SamlDocument $document */
+        $document      = $element->ownerDocument;
+        $newNode       = $document->importNode($decrypted->documentElement->firstChild, true);
+        $nodeToReplace = $element;
+
+        // Some nodes contain encrypted data rather than being directly encrypted.
+        // This means we sometimes need to replace the parent of the EncryptedData rather than the EncryptedData itself.
+        // TODO: Is there a nicer way to handle this than checking for specific nodes?
+        $encryptionContainers = [
+            'EncryptedAssertion',
+            'EncryptedID'
+        ];
+
+        if (in_array($nodeToReplace->parentNode->localName, $encryptionContainers, true)) {
+            $nodeToReplace = $element->parentNode;
         }
 
-        // Replace the encrypted element with the decrypted element.
-
-        $newNode        = $document->importNode($decrypted->root(), true);
-        $encryptionRoot = $encryptedData->parentNode;
-
-        $encryptionRoot->parentNode->replaceChild($newNode, $encryptionRoot);
+        $nodeToReplace->parentNode->replaceChild($newNode, $nodeToReplace);
 
         return $document;
     }

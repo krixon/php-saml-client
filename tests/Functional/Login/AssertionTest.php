@@ -6,6 +6,8 @@ use Krixon\SamlClient\Document\SamlDocument;
 use Krixon\SamlClient\Login\Response;
 use Krixon\SamlClient\Protocol\Attribute;
 use Krixon\SamlClient\Protocol\AttributeNameFormat;
+use Krixon\SamlClient\Protocol\NameId;
+use Krixon\SamlClient\Protocol\NameIdFormat;
 use Krixon\SamlClient\Security\Key;
 use Krixon\SamlClient\Test\TestCase;
 
@@ -147,5 +149,41 @@ class AssertionTest extends TestCase
         $datetime = $attributes[21]->firstValue();
         static::assertInstanceOf(\DateTimeImmutable::class, $datetime);
         static::assertSame(946710930, $datetime->getTimestamp()); // 2000-01-01T12:15:30+05:00, 2000-01-01T07:15:30Z
+    }
+
+
+    public function testExtractsId()
+    {
+        $response = $this->response('assertions/unsigned-unencrypted.xml');
+
+        static::assertSame('_DHaRn8qZv1jr3UOpKHUZgtsiPdA3BKTk', $response->assertion()->id());
+    }
+
+
+    public function testExtractsDoubleEncryptedNameId()
+    {
+        $response = $this->response('assertions/nameid-double-encrypted.xml', '512b-rsa-example-keypair.pem');
+        $nameId   = $response->assertion()->nameId();
+
+        static::assertInstanceOf(NameId::class, $nameId);
+        static::assertSame('karlrixon@gmail.com', $nameId->value());
+        static::assertSame('http://example.com', $nameId->spNameQualifier());
+        static::assertNull($nameId->nameQualifier());
+        static::assertTrue(NameIdFormat::emailAddress()->equals($nameId->format()));
+    }
+
+
+    private function response(string $xmlFixture, string $keyFixture = null) : Response
+    {
+        $xml = $this->fixtureContent($xmlFixture);
+        $key = null;
+
+        if ($keyFixture) {
+            $key = new Key($this->fixtureContent($keyFixture));
+        }
+
+        $document = SamlDocument::import($xml);
+
+        return Response::fromDocument($document, $key);
     }
 }

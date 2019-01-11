@@ -70,6 +70,18 @@ final class XmlNamespace
     }
 
 
+    public static function attributeString() : string
+    {
+        return implode(' ', array_map(
+            function ($prefix, $urn) {
+                return $prefix . '="' . $urn . '"';
+            },
+            array_keys(self::MAP),
+            self::MAP
+        ));
+    }
+
+
     public function qualifiedName() : string
     {
         return $this->qualifiedName;

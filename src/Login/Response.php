@@ -6,7 +6,7 @@ use Krixon\SamlClient\Document\Exception\DecryptionFailed;
 use Krixon\SamlClient\Document\Exception\InvalidDocument;
 use Krixon\SamlClient\Document\SamlDocument;
 use Krixon\SamlClient\Login\Exception\InvalidResponse;
-use Krixon\SamlClient\Protocol\Assertion;
+use Krixon\SamlClient\Protocol\Assertion\Assertion;
 use Krixon\SamlClient\Protocol\Attribute;
 use Krixon\SamlClient\Protocol\Status;
 use Krixon\SamlClient\Protocol\StatusCode;
@@ -31,7 +31,7 @@ final class Response
     {
         self::assertValidDocument($document);
 
-        if ($document->hasEncryptedAssertion()) {
+        if ($document->hasEncryptedAssertion()) { // FIXME: Not a good enough check because other things can be encrypted. Look for an XMLEnc element instead
             if (!$decryptionKey) {
                 throw new InvalidResponse('Response contains encrypted assertion but no decryption key was provided.');
             }
@@ -42,8 +42,16 @@ final class Response
             }
         }
 
-        $status    = Status::fromDocument($document);
-        // TODO: Multiple assertions?
+        $status = Status::fromDocument($document);
+
+        // TODO: Multiple assertions are technically valid according to the spec.
+        //       One use case for multiple Assertion could be a claim about the Subject that is time limited
+        //       differently from the Attribute list. e.g. perhaps some fact about the user that should only be
+        //       relied on for a short period of time, defined by Conditions->NotBefore->NotOnOrAfter. Perhaps some
+        //       authentication mechanism that only allows users to be authenticated at the IdP for a short period
+        //       of time, compared to the longer period of time their Attribute list can be used for.
+        //       However in practice, there are not many implementations which would produce or consume multiple
+        //       assertions, so for simplicity only a single assertion is supported for now.
         $assertion = $document->hasAssertion() ? Assertion::fromDocument($document) : null;
 
         return new self($status, $assertion);
@@ -72,6 +80,12 @@ final class Response
         }
 
         return $this->assertion->attributes();
+    }
+
+
+    public function assertion() : ?Assertion
+    {
+        return $this->assertion;
     }
 
 
